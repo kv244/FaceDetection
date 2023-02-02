@@ -68,8 +68,9 @@ void draw() {
     
     if(tick){
       timeMilli = System.currentTimeMillis();
-      String fImgName = pathImage + Long.toString(timeMilli) + ".jpg";
-      String fMsgName = pathMessage + Long.toString(timeMilli) + ".txt";
+      String st = Long.toString(timeMilli);
+      String fImgName = pathImage + st + ".jpg";
+      String fMsgName = pathMessage + st + ".txt";
       if(!saveScreen(fImgName, faces)){
         print("Image save failed - not submitted for recognition.\n");
         return;
@@ -77,7 +78,6 @@ void draw() {
       makeMessage(fMsgName, fImgName);
     }
   }
-  // add thread to get response from IRIS
 }
 
 // Save identified image(s)
@@ -86,7 +86,8 @@ void draw() {
 boolean saveScreen(String imgPath, Rectangle[] ptrFaces){
   Rectangle savedRect = ptrFaces[0];
   BufferedImage biRenderedImage = (BufferedImage)renderedImage.getNative();
-  BufferedImage biSavedImage = biRenderedImage.getSubimage(savedRect.x, savedRect.y, savedRect.width, savedRect.height);
+  BufferedImage biSavedImage = biRenderedImage.getSubimage(savedRect.x, 
+    savedRect.y, savedRect.width, savedRect.height);
   File outputFile = new File(imgPath);
   text("Saving: " + imgPath, textX, textY + textHeight * 2);
   print("Saving: " + imgPath + "\n");
@@ -103,7 +104,7 @@ boolean saveScreen(String imgPath, Rectangle[] ptrFaces){
   return true;
 }
 
-// Create message for image checker
+// Create message for facial recognition server
 boolean makeMessage(String fName, String imgPath){
   // may need to replace \\ path to match what IRIS expects
   String content = "who," + imgPath + "\\" + fName;
@@ -113,7 +114,8 @@ boolean makeMessage(String fName, String imgPath){
   print("Checking: " + imgPath + "\n");
   try (
     final BufferedWriter writer = Files.newBufferedWriter(outputFile.toPath(),
-            java.nio.charset.StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.CREATE);
+            java.nio.charset.StandardCharsets.UTF_8, 
+            java.nio.file.StandardOpenOption.CREATE);
     ){
         writer.write(content);
         writer.flush();
